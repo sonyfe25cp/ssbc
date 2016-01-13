@@ -10,3 +10,15 @@
 
 相关文章请查看作者博客：
 http://xiaoxia.org/2015/05/15/shousibaocai-opensource/
+
+##How to install
+
+1. sudo pip install -r requirments.txt
+
+2. start a mysql, edit the db metadata
+
+3. create db and table
+
+   create database ssbc default charset = 'utf8';
+
+

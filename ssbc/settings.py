@@ -84,8 +84,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ssbc',
         'HOST': '127.0.0.1',
-        'PORT': 3306,
+        'PORT': 3333,
         'USER': 'root',
+        'PASSWORD': 'dht',
         'OPTIONS': {
            "init_command": "SET storage_engine=MYISAM",
         }  
@@ -122,8 +123,8 @@ EMAIL_HOST_PASSWORD = 'you_need_to_set_this_in_deployment.py'
 DEFAULT_FROM_EMAIL = 'CiLiBaBa <noreply@cilibaba.com>'
 EMAIL_USE_SSL = True
 EMAIL_PORT = 465
-SERVER_EMAIL = 'server@cilibaba.com'
-ADMINS = (('Xiaoxia', 'test@test.com'),)
+SERVER_EMAIL = 'xx@xx.com'
+ADMINS = (('xxxxx', 'test@test.com'),)
 
 
 HOME_URL = ''

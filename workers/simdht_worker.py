@@ -42,7 +42,8 @@ from metadata import save_metadata
 
 DB_HOST = '127.0.0.1'
 DB_USER = 'root'
-DB_PASS = ''
+DB_PASS = 'dht'
+DB_PORT = 3333
 BOOTSTRAP_NODES = (
     ("router.bittorrent.com", 6881),
     ("dht.transmissionbt.com", 6881),
@@ -157,9 +158,13 @@ class DHTClient(Thread):
         nodes = decode_nodes(msg["r"]["nodes"])
         for node in nodes:
             (nid, ip, port) = node
-            if len(nid) != 20: continue
-            if ip == self.bind_ip: continue
+            if len(nid) != 20: 
+                continue
+            if ip == self.bind_ip:
+                print 'ip is self bind_ip' 
+                continue
             n = KNode(nid, ip, port)
+            print "new node ip: ",ip
             self.nodes.append(n)
 
 
@@ -181,6 +186,8 @@ class DHTServer(DHTClient):
         self.ufd.bind((self.bind_ip, self.bind_port))
 
         timer(RE_JOIN_DHT_INTERVAL, self.re_join_DHT)
+
+        print 'dht server ok'
 
 
     def run(self):
@@ -239,6 +246,7 @@ class DHTServer(DHTClient):
                 else:
                     port = msg["a"]["port"]
                 self.master.log_announce(infohash, (address[0], port))
+                print 'add new to queue, ip:', address[0], 'port:', port
         except Exception:
             print 'error'
             pass
@@ -279,13 +287,14 @@ class Master(Thread):
         self.setDaemon(True)
         self.queue = Queue()
         self.metadata_queue = Queue()
-        self.dbconn = mdb.connect(DB_HOST, DB_USER, DB_PASS, 'ssbc', charset='utf8')
+        self.dbconn = mdb.connect(DB_HOST, DB_USER, DB_PASS, 'ssbc', port=DB_PORT, charset='utf8')#add port
         self.dbconn.autocommit(False)
         self.dbcurr = self.dbconn.cursor()
         self.dbcurr.execute('SET NAMES utf8')
         self.n_reqs = self.n_valid = self.n_new = 0
         self.n_downloading_lt = self.n_downloading_pt = 0
         self.visited = set()
+        print 'init ok'
 
     def got_torrent(self):
         binhash, address, data, dtype, start_time = self.metadata_queue.get()
@@ -307,13 +316,15 @@ class Master(Thread):
         while True:
             while self.metadata_queue.qsize() > 0:
                 self.got_torrent()
+            print 'a'
             address, binhash, dtype = self.queue.get()
+            print "address", address, "binhash", binhash, "dtype", dtype
             if binhash in self.visited:
                 continue
             if len(self.visited) > 100000:
                 self.visited = set()
             self.visited.add(binhash)
-
+            print 'b'
             self.n_reqs += 1
             info_hash = binhash.encode('hex')
 
@@ -323,6 +334,7 @@ class Master(Thread):
 
             # Check if we have this info_hash
             self.dbcurr.execute('SELECT id FROM search_hash WHERE info_hash=%s', (info_hash,))
+            print 'c'
             y = self.dbcurr.fetchone()
             if y:
                 self.n_valid += 1
@@ -383,7 +395,8 @@ if __name__ == "__main__":
     rpcthread.setDaemon(True)
     rpcthread.start()
 
-    dht = DHTServer(master, "0.0.0.0", 6881, max_node_qsize=200)
+    open_ip = "0.0.0.0"
+    dht = DHTServer(master, open_ip, 6881, max_node_qsize=200)
     dht.start()
     dht.auto_send_find_node()
 
