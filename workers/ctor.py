@@ -30,9 +30,9 @@ for _info in infos:
   	# print _info
   	_info = _info.split(" ")[7]
 	# continue
-	_torrent = getTorrent(_info)
+	_torrent = getTorrentFromTor(_info)
 
-	if len(_torrent) == 0 or re.search(r'Not Found', _torrent):
+	if len(_torrent) == 0 or re.search(r'404', _torrent):
 		print _info + " not found"
 	else:
 		_f = "torrent/" + _info + '.torrent'
