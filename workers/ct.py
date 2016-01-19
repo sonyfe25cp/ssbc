@@ -23,7 +23,7 @@ for _info in infos:
 	if re.search(r'Not Found', _torrent):
 		print _info + " not found"
 	else:
-		_f = "torrent/"+str(_c)+'.torrent'
+		_f = "torrent/" + _info + '.torrent'
 		_op = open(_f, 'w')
 		_op.write(_torrent)
 		_op.close()
