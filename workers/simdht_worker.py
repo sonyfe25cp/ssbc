@@ -164,7 +164,7 @@ class DHTClient(Thread):
                 print 'ip is self bind_ip' 
                 continue
             n = KNode(nid, ip, port)
-            print "new node ip: ",ip
+            print "nid from", ip,":", port
             self.nodes.append(n)
 
 
