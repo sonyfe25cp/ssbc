@@ -35,10 +35,12 @@ def parse_metadata(data):
     encoding = 'utf8'
     try:
         torrent = bdecode(data)
-        if not torrent.get('name'):
+        #print torrent
+        if not torrent.get('info').get('name'):
             return None
     except:
         return None
+    print 'torrent over'
     try:
         info['create_time'] = datetime.datetime.fromtimestamp(float(torrent['creation date']))
     except:
